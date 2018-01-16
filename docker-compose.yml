@@ -1,0 +1,148 @@
+version: "3"
+services:
+    rabbit:
+        image:
+            rabbitmq:3-management
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-b
+        ports:
+            - "15672:15672"
+        environment:
+          - RABBITMQ_DEFAULT_USER=stackrabbit
+          - RABBITMQ_DEFAULT_PASS=password
+        networks:
+            cnalan:
+                aliases:
+                    - rabbit
+    redis:
+        image:
+            redis
+       deploy:
+         placement:
+           constraints:
+             -node.role == instanceredis
+        networks:
+            cnalan:
+                aliases:
+                    - redis
+    db:
+        image: ##REGISTRY##/cloudnativeapp_db
+        deploy:
+          placement:
+            constraints:
+              -node.role == instancemariadb
+        environment:
+            - MYSQL_ROOT_PASSWORD=##MYSQL_ROOT_PASSWORD##
+            - MYSQL_DATABASE=##MYSQL_DATABASE##
+            - MYSQL_USER=##MYSQL_USER##
+            - MYSQL_PASSWORD=##MYSQL_PASSWORD##
+        networks:
+            cnalan:
+                aliases:
+                    - db
+    web:
+        image: ##REGISTRY##/cloudnativeapp_web
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-web
+        ports:
+            - "80:80"
+        links:
+          - i
+          - s
+          - b
+          - p
+        networks:
+            cnalan:
+    i:
+        image: ##REGISTRY##/cloudnativeapp_i
+        deploy:
+          placement:
+            constraints:
+              -node.role == instancemariadb
+        links:
+            - db
+        networks:
+            cnalan:
+              aliases:
+                - i
+    s:
+        image: ##REGISTRY##/cloudnativeapp_s
+        deploy:
+          placement:
+            constraints:
+              -node.role == instanceredis
+        links:
+            - redis
+        networks:
+            cnalan:
+              aliases:
+                - s
+    b:
+        image: ##REGISTRY##/cloudnativeapp_b
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-b
+        links:
+            - w
+            - rabbit
+        networks:
+            cnalan:
+              aliases:
+                - b
+    p:
+        image: ##REGISTRY##/cloudnativeapp_p
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-p
+        networks:
+            cnalan:
+              aliases:
+                - p
+    w:
+        image: ##REGISTRY##/cloudnativeapp_w
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-b
+        networks:
+            cnalan:
+              aliases:
+                - w
+    w1:
+        image: ##REGISTRY##/cloudnativeapp_w1
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-b
+        links:
+          - rabbit
+          - redis
+        networks:
+            cnalan:
+              aliases:
+                - w1
+    w2:
+        image: ##REGISTRY##/cloudnativeapp_w2
+        deploy:
+          placement:
+            constraints:
+              -node.role == instance-b
+        links:
+          - rabbit
+        environment:
+          - W2_APIKEY=##W2_APIKEY##
+          - W2_TO=##W2_TO##
+          - W2_DOMAIN=##W2_DOMAIN##
+        networks:
+            cnalan:
+              aliases:
+                - w2
+networks:
+    cnalan:
+        driver: overlay
