@@ -5,8 +5,7 @@ services:
             rabbitmq:3-management
         deploy:
           placement:
-            constraints:
-              -node.role == instance-b
+            constraints: [node.hostname == instance-b]
         ports:
             - "15672:15672"
         environment:
@@ -21,8 +20,7 @@ services:
             redis
        deploy:
          placement:
-           constraints:
-             -node.role == instanceredis
+           constraints: [node.hostname == instanceredis]
         networks:
             cnalan:
                 aliases:
@@ -31,8 +29,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_db
         deploy:
           placement:
-            constraints:
-              -node.role == instancemariadb
+            constraints: [node.hostname == instancemariadb]
         environment:
             - MYSQL_ROOT_PASSWORD=##MYSQL_ROOT_PASSWORD##
             - MYSQL_DATABASE=##MYSQL_DATABASE##
@@ -46,8 +43,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_web
         deploy:
           placement:
-            constraints:
-              -node.role == instance-web
+            constraints: [node.hostname == instance-web]
         ports:
             - "80:80"
         links:
@@ -61,8 +57,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_i
         deploy:
           placement:
-            constraints:
-              -node.role == instancemariadb
+            constraints: [node.hostname == instancemariadb]
         links:
             - db
         networks:
@@ -73,8 +68,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_s
         deploy:
           placement:
-            constraints:
-              -node.role == instanceredis
+            constraints: [node.hostname == instanceredis]
         links:
             - redis
         networks:
@@ -85,8 +79,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_b
         deploy:
           placement:
-            constraints:
-              -node.role == instance-b
+            constraints: [node.hostname == instance-b]
         links:
             - w
             - rabbit
@@ -98,8 +91,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_p
         deploy:
           placement:
-            constraints:
-              -node.role == instance-p
+            constraints: [node.hostname == instance-p]
         networks:
             cnalan:
               aliases:
@@ -108,8 +100,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_w
         deploy:
           placement:
-            constraints:
-              -node.role == instance-b
+            constraints: [node.hostname == instance-b]
         networks:
             cnalan:
               aliases:
@@ -118,8 +109,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_w1
         deploy:
           placement:
-            constraints:
-              -node.role == instance-b
+            constraints: [node.hostname == instance-b]
         links:
           - rabbit
           - redis
@@ -131,8 +121,7 @@ services:
         image: ##REGISTRY##/cloudnativeapp_w2
         deploy:
           placement:
-            constraints:
-              -node.role == instance-b
+            constraints: [node.hostname == instance-b]
         links:
           - rabbit
         environment:
