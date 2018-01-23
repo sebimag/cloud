@@ -1,0 +1,138 @@
+version: "3"
+services:
+    rabbit:
+        image:
+            rabbitmq:3-management
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-b]
+        ports:
+            - "15672:15672"
+        environment:
+          - RABBITMQ_DEFAULT_USER=stackrabbit
+          - RABBITMQ_DEFAULT_PASS=password
+        networks:
+            cnalan:
+                aliases:
+                    - rabbit
+    redis:
+        image:
+            redis
+        deploy:
+                placement:
+                        constraints: [node.hostname == instanceredis]
+        networks:
+            cnalan:
+                aliases:
+                    - redis
+    db:
+        image: sebimag/cloudnativeapp_db
+        deploy:
+                placement:
+                        constraints: [node.hostname == instancemariadb]
+        environment:
+            - MYSQL_ROOT_PASSWORD=toto
+            - MYSQL_DATABASE=prestashop
+            - MYSQL_USER=prestashop
+            - MYSQL_PASSWORD=prestashop1234
+        networks:
+            cnalan:
+                aliases:
+                    - db
+    web:
+        image: sebimag/cloudnativeapp_web
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-web]
+        ports:
+            - "80:80"
+        links:
+          - i
+          - s
+          - b
+          - p
+        networks:
+            cnalan:
+    i:
+        image: sebimag/cloudnativeapp_i
+        deploy:
+                placement:
+                        constraints: [node.hostname == instancemariadb]
+        links:
+            - db
+        networks:
+            cnalan:
+              aliases:
+                - i
+    s:
+        image: sebimag/cloudnativeapp_s
+        deploy:
+                placement:
+                        constraints: [node.hostname == instanceredis]
+        links:
+            - redis
+        networks:
+            cnalan:
+              aliases:
+                - s
+    b:
+        image: sebimag/cloudnativeapp_b
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-b]
+        links:
+            - w
+            - rabbit
+        networks:
+            cnalan:
+              aliases:
+                - b
+    p:
+        image: sebimag/cloudnativeapp_p
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-p]
+        networks:
+            cnalan:
+              aliases:
+                - p
+    w:
+        image: sebimag/cloudnativeapp_w
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-b]
+        networks:
+            cnalan:
+              aliases:
+                - w
+    w1:
+        image: sebimag/cloudnativeapp_w1
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-b]
+        links:
+          - rabbit
+          - redis
+        networks:
+            cnalan:
+              aliases:
+                - w1
+    w2:
+        image: sebimag/cloudnativeapp_w2
+        deploy:
+                placement:
+                        constraints: [node.hostname == instance-b]
+        links:
+          - rabbit
+        environment:
+          - W2_APIKEY=blakey
+          - W2_TO=machin@bidule.com
+          - W2_DOMAIN=domain
+        networks:
+            cnalan:
+              aliases:
+                - w2
+networks:
+    cnalan:
+        driver: overlay
+
