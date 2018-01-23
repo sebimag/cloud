@@ -1,0 +1,15 @@
+version: "2"
+services:
+    b:
+        build:
+            context: .
+        ports:
+            - "8082:8082"
+        links:
+            - rabbit
+    rabbit:
+        container_name: rabbit
+        image:
+            rabbit
+        #args:
+        #appendonly: yes
