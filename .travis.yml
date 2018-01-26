@@ -1,4 +1,3 @@
-language: node_js
-node_js:
-  - "iojs"
-  - "7"
+language: bash
+install: 
+	./tests/build/deploy_packstack.sh 
