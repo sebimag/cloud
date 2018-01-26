@@ -1,3 +1,13 @@
 language: bash
 install: 
-	./tests/build/deploy_packstack.sh 
+	./tests/build/deploy_instances.sh 10.11.53.34
+	./tests/build/install_swarm.sh
+script:
+	./tests/deploy_tests.sh 10.11.53.34
+after_success:
+	./tests/build/clean_envs.sh
+	./tests/build/install_packstack.sh 10.11.51.173 10.11.54.150 10.11.54.169
+	./tests/build/deploy_instance.sh 10.11.51.173
+	./tests/build/install_swarm.sh	
+after_failure:
+	./tests/build/clean_envs.sh

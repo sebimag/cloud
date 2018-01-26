@@ -24,4 +24,4 @@ nova boot --flavor m1.tiny --image zesty --nic net-id=$NET_ID --security-group d
 neutron floatingip-create public-subnet;
 nova floating-ip-associate instance-web 10.11.54.153;"
 
-ssh root@10.11.51.173 $deploy_instance
+ssh root@$1 $deploy_instance
